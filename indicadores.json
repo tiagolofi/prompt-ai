@@ -1,0 +1,47 @@
+[
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Segurança",
+    "Indicador_Especifico": "Banco de dados oceanográficos/meteorológicos"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Segurança",
+    "Indicador_Especifico": "Prevenção de riscos e emergência"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Segurança",
+    "Indicador_Especifico": "Ocorrência de acidentes ambientais"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Gestão das operações",
+    "Indicador_Especifico": "Retirada de resíduos de navios"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Gestão das operações",
+    "Indicador_Especifico": "Contêineres com produtos perigosos"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Gerenciamento de energia",
+    "Indicador_Especifico": "Redução do consumo de energia"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Gerenciamento de energia",
+    "Indicador_Especifico": "Geração de energia limpa"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Gerenciamento de energia",
+    "Indicador_Especifico": "Fornecimento de energia a navios"
+  },
+  {
+    "Categoria": "Econômico-operacional",
+    "Indicador_Global": "Custos ambientais",
+    "Indicador_Especifico": "Internalização dos custos ambientais"
+  }
+]
