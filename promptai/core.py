@@ -28,11 +28,11 @@ class Input(BaseModel):
 def __conteudo_adicional(input: Input) -> str:
     if input.id is None:
         return f'''
-\n\nMonte o resultado como um arquivo JSON contendo somente as seguintes chaves: "{input.keys}", 
-mantendo cada entrada da lista como "chave: valor", "chave: valor"... e RETORNE APENAS O ARQUIVO sem ```"'''
+\n\nMonte o resultado como uma lista de arquivo JSON contendo somente as seguintes chaves: "{input.keys}", 
+mantendo cada entrada da lista como "chave: valor"... e RETORNE APENAS O ARQUIVO sem ```"'''
     return f'''
-\n\nid={input.id}\n\nMonte o resultado como um arquivo JSON contendo somente as chaves: "id, {input.keys}", 
-mantendo cada entrada da lista como "chave: valor", "chave: valor"... e RETORNE APENAS O ARQUIVO sem ```"'''
+\n\nid={input.id}\n\nMonte o resultado como uma lista de arquivo JSON contendo somente as chaves: "id, {input.keys}", 
+mantendo cada entrada da lista como "chave: valor"... e RETORNE APENAS O ARQUIVO sem ```"'''
 
 def __build_input(input: Input) -> str:
     input.prompt += __conteudo_adicional(input)
