@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     python_requires=">=3.9",
     install_requires=[
-        "python-dotenv", "pytest"
+        "python-dotenv", "pytest", "pandas", "openai", "openpyxl"
     ],
     extras_require={
     },
