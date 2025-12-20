@@ -18,10 +18,12 @@ with open('xlsx/indicadores.json', 'r') as file:
 
 lista_inputs = []
 for i in indicadores:
-    lista_inputs.append(Input(id=uuid4(), prompt=prompt, keys=keys, variables=i))
+    lista_inputs.append(Input(id=uuid4(), prompt=prompt, image=None, keys=keys, variables=i))
 
 client = OpenAI()
 
-df = job(client=client, inputs=lista_inputs, request_type=OpenAiRequestType.GENERAL)
+df = job(client=client, inputs=lista_inputs, request_type=OpenAiRequestType.WEB_SEARCH)
 
 print(df)
+
+df.to_excel('Extracao-Artigos.xlsx', index=False)

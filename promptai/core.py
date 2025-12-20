@@ -2,13 +2,14 @@
 from openai import OpenAI
 from json import loads
 from dotenv import load_dotenv
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from pandas import DataFrame
 from string import Template
 from uuid import UUID
 from enum import Enum
 from os import getenv
+from base64 import b64encode
 
 import logging
 
@@ -18,18 +19,38 @@ logging.basicConfig(filename='.log', level=logging.INFO)
 load_dotenv(override=True)
 
 class Input(BaseModel):
-    id: UUID
+    id: Optional[UUID]
     prompt: str
+    image: Optional[str]
     keys: str
-    variables: Dict[str, str]
+    variables: Optional[Dict[str, str]]
+
+def __conteudo_adicional(input: Input) -> str:
+    if input.id is None:
+        return f'''
+\n\nMonte o resultado como um arquivo JSON contendo somente as seguintes chaves: "{input.keys}", 
+mantendo cada entrada da lista como "chave: valor", "chave: valor"... e RETORNE APENAS O ARQUIVO sem ```"'''
+    return f'''
+\n\nid={input.id}\n\nMonte o resultado como um arquivo JSON contendo somente as chaves: "id, {input.keys}", 
+mantendo cada entrada da lista como "chave: valor", "chave: valor"... e RETORNE APENAS O ARQUIVO sem ```"'''
 
 def __build_input(input: Input) -> str:
-    input.prompt += f'\n\nid={input.id}\n\nMonte o resultado como um arquivo JSON contendo as seguintes chaves: "id, {input.keys}" e RETORNE APENAS O ARQUIVO sem ```"'
+    input.prompt += __conteudo_adicional(input)
     template = Template(input.prompt)
     return template.substitute(input.variables)
 
-def __execute_web_search(client: OpenAI, input: Input) -> List[Dict]:
+def __encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return b64encode(image_file.read()).decode("utf-8")
+
+def __execute_web_search(client: OpenAI, input: Input) -> List[Dict]|Dict[str, Any]:
     response = client.responses.create(model = getenv('OPENAI_MODEL'), tools = [{"type": "web_search"}], input = __build_input(input))
+    return loads(response.output_text)
+
+def __execute_image_input(client: OpenAI, input: Input) -> List[Dict]|Dict[str, Any]:
+    content = [{'type': 'input_text', 'text': __build_input(input)}, 
+               {'type': 'input_image', 'image_url': f'data:image/jpeg;base64,{__encode_image(input.image)}'}]
+    response = client.responses.create(model = getenv('OPENAI_MODEL'), input = [{'role': 'user', 'content': content}])
     return loads(response.output_text)
 
 def __execute_general(client:OpenAI, input: Input) -> List[Dict]|Dict[str, Any]:
@@ -39,6 +60,7 @@ def __execute_general(client:OpenAI, input: Input) -> List[Dict]|Dict[str, Any]:
 class OpenAiRequestType(Enum):
     WEB_SEARCH = "web_search"
     GENERAL = "general"
+    IMAGE = "image"
 
 def __process_response_list(list_response: List[Any], response: List[Dict]|Dict):
     if type(response) == dict:
@@ -56,6 +78,11 @@ def job(client: OpenAI, inputs: List[Input], request_type: OpenAiRequestType) ->
             for i in inputs:
                 logger.info(f'query {i.id} | {inputs.index(i)}/{len(inputs)}')
                 response = __execute_web_search(client, i)
+                __process_response_list(list_responses, response)
+        case OpenAiRequestType.IMAGE:
+            for i in inputs:
+                logger.info(f'query {i.id} | {inputs.index(i)}/{len(inputs)}')
+                response = __execute_image_input(client, i)
                 __process_response_list(list_responses, response)
         case OpenAiRequestType.GENERAL:
             for i in inputs:
